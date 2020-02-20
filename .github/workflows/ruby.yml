@@ -1,0 +1,38 @@
+name: CI
+
+on: [pull_request, push]
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ ubuntu-latest]
+        ruby: [2.6, 2.7]
+    runs-on: ${{ matrix.os }}
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-ruby@v1
+      with:
+        ruby-version: '2.6'
+    - run: |
+        ruby -v
+        echo $PATH
+        export JRUBY_OPTS='--dev'
+
+    - name: Install SQlite
+      run: sudo apt-get install libsqlite3-dev
+
+    - name: update_rubygems_and_install_bundler
+      run: script/update_rubygems_and_install_bundler && unset _JAVA_OPTIONS
+
+    - name: Clone all RSpec repos
+      run: script/clone_all_rspec_repos
+
+    - name: bundle install
+      run: bundle install --jobs 4 --retry 3 --binstubs --standalone --without documentation --path ../bundle
+      shell: bash
+
+    - name: run RSpec build
+      run: script/run_build
+      shell: bash
