@@ -74,6 +74,10 @@ RSpec.configure do |c|
     handle_current_dir_change(&ex)
   end
 
+  c.expect_with :rspec do |ce|
+    ce.max_formatted_output_length = 2000
+  end
+
   # structural
   c.alias_it_behaves_like_to 'it_has_behavior'
   c.include(RSpecHelpers)
