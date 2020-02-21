@@ -5,31 +5,41 @@ on: [pull_request, push]
 jobs:
   test:
     strategy:
+      fail-fast: false
       matrix:
         os: [ ubuntu-latest]
-        ruby: [2.6, 2.7]
+        ruby: [ 2.4, 2.5, 2.6, 2.7 ]
     runs-on: ${{ matrix.os }}
-    name: Ruby ${{ matrix.ruby }} sample
     steps:
     - uses: actions/checkout@v2
-    - uses: actions/setup-ruby@v1
+    - uses: eregon/use-ruby-action@master
       with:
         ruby-version: ${{ matrix.ruby }}
-    - run: |
-        ruby -v
-        echo $PATH
-        export JRUBY_OPTS='--dev'
+    - run: ruby -v
 
-    - name: update_rubygems_and_install_bundler
-      run: script/update_rubygems_and_install_bundler && unset _JAVA_OPTIONS
+    - name: Set JRUBY_OPTS
+      env:
+        JRUBY_OPTS: '--dev'
+      run: echo $JRUBY_OPTS
+
+    - name: Install SQlite
+      run: sudo apt-get install libsqlite3-dev
+
+    - name: Build and run script/run_build
+      run: ./script/update_rubygems_and_install_bundler
+      shell: bash
 
     - name: Clone all RSpec repos
-      run: script/clone_all_rspec_repos
+      run: ./script/clone_all_rspec_repos
+      shell: bash
 
     - name: bundle install
       run: bundle install --jobs 4 --retry 3 --binstubs --standalone --without documentation --path ../bundle
       shell: bash
 
-    - name: run RSpec build
-      run: script/run_build
+    - name: Run build
+      run: |
+        sudo chmod 755 /home/runner
+        sudo chmod 755 -R /usr/share
+        script/run_build
       shell: bash
