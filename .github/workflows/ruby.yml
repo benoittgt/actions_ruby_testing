@@ -9,33 +9,11 @@ jobs:
       matrix:
         ruby: [ 2.6, 2.7 ]
     runs-on: ubuntu-latest
+    env:
+      TESTING: true
     steps:
     - uses: actions/checkout@v2
     - uses: actions/setup-ruby@v1
       with:
         ruby-version: ${{ matrix.ruby }}
-    - run: ruby -v && ruby basic_rake.rb
-
-    - name: Set JRUBY_OPTS
-      env:
-        JRUBY_OPTS: '--dev'
-      run: echo $JRUBY_OPTS
-
-    - name: Install SQlite
-      run: sudo apt-get install libsqlite3-dev
-
-    - name: Build and run script/run_build
-      run: script/update_rubygems_and_install_bundler
-      shell: bash
-
-    - name: Clone all RSpec repos
-      run: script/clone_all_rspec_repos
-      shell: bash
-
-    - name: bundle install
-      run: bundle install --jobs 4 --retry 3 --binstubs --standalone --without documentation --path ../bundle
-      shell: bash
-
-    - name: Run build
-      run: script/run_build
-      shell: bash
+    - run: ruby -v && echo $TESTING
