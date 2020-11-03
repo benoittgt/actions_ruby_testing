@@ -9,11 +9,13 @@ jobs:
       matrix:
         include:
           - ruby: 2.6
-            RAILS_VERSION: '~> 6.0.0'
-            JRUBY_OPT: '--dev'
+            env:
+              RAILS_VERSION: '~> 6.0.0'
+              JRUBY_OPT: '--dev'
           - ruby: 2.7
-            RAILS_VERSION: '~> 6.2.0'
-            JRUBY_OPT: '--devd'
+            env:
+              RAILS_VERSION: '~> 6.2.0'
+              JRUBY_OPT: '--devd'
     runs-on: ubuntu-latest
     env:
       TESTING: true
@@ -23,7 +25,4 @@ jobs:
       with:
         ruby-version: ${{ matrix.ruby }}
     - name: Set ENV variables
-      env:
-        RAILS_VERSION: ${{matrix.RAILS_VERSION}}
-        JRUBY_OPT: ${{matrix.JRUBY_OPT}}
       run: ruby -v && echo $TESTING && echo $RAILS_VERSION && $JRUBY_OPT
