@@ -9,11 +9,13 @@ jobs:
       matrix:
         include:
           - ruby: 2.6
-            RAILS_VERSION: '~> 6.0.0'
-            JRUBY_OPT: '--dev'
+            env:
+              RAILS_VERSION: '~> 6.0.0'
+              JRUBY_OPT: '--dev'
           - ruby: 2.7
-            RAILS_VERSION: '~> 6.2.0'
-            JRUBY_OPT: '--devd'
+            env:
+              RAILS_VERSION: '~> 6.2.0'
+              JRUBY_OPT: '--devd'
     runs-on: ubuntu-latest
     env:
       TESTING: true
@@ -25,11 +27,5 @@ jobs:
     # Set env to multiple steps
     # https://docs.github.com/en/free-pro-team@latest/actions/reference/workflow-commands-for-github-actions#environment-files
     - name: Set ENV variables
-      env:
-        RAILS_VERSION: ${{ matrix.RAILS_VERSION }}
-        JRUBY_OPT: ${{ matrix.JRUBY_OPT }}
-      run: |
-        echo "RAILS_VERSION=$RAILS_VERSION" >> $GITHUB_ENV
-        echo "JRUBY_OPT=$JRUBY_OPT" >> $GITHUB_ENV
-    - name: Echo env
-      run: ruby -v && echo $TESTING && echo $RAILS_VERSION && $JRUBY_OPT
+      env: ${{ matrix.env }}
+      run: ruby -v && echo $TESTING && echo $RAILS_VERSION && $JRUBY_OPT && echo ${{ matrix.env }}
