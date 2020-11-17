@@ -4,6 +4,8 @@ on: [pull_request, push]
 
 jobs:
   test:
+    name: 'Ruby: ${{ matrix.ruby }}, Rails: ${{ matrix.env.RAILS_VERSION }}'
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
@@ -11,21 +13,16 @@ jobs:
           - ruby: 2.6
             env:
               RAILS_VERSION: '~> 6.0.0'
-              JRUBY_OPT: '--dev'
+            JRUBY_OPT: '--dev'
           - ruby: 2.7
             env:
               RAILS_VERSION: '~> 6.2.0'
               JRUBY_OPT: '--devd'
-    runs-on: ubuntu-latest
-    env:
-      TESTING: true
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-ruby@v1
-      with:
-        ruby-version: ${{ matrix.ruby }}
-    # Set env to multiple steps
-    # https://docs.github.com/en/free-pro-team@latest/actions/reference/workflow-commands-for-github-actions#environment-files
-    - name: Set ENV variables
-      env: ${{ matrix.env }}
-      run: ruby -v && echo $TESTING && echo $RAILS_VERSION && $JRUBY_OPT && echo ${{ matrix.env }}
+      - uses: actions/checkout@v2
+      - uses: actions/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby }}
+      - name: Set ENV variables
+        env: ${{ matrix.env }}
+        run: echo "Hello"
